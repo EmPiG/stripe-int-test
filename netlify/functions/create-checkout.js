@@ -6,13 +6,7 @@ exports.handler = async (event) => {
     const session = await stripe.checkout.sessions.create({
       ui_mode: 'embedded',
       line_items: [{
-        price_data: {
-          currency: 'pln',
-          product_data: {
-            name: 'Twój produkt',
-          },
-          unit_amount: 1999, // 19.99 PLN
-        },
+        price: 'price_1QhHlFC8xNNfMSBE9CIjk1nn',
         quantity: 1,
       }],
       mode: 'payment',

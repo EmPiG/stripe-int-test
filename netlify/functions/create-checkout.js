@@ -3,31 +3,34 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 exports.handler = async (event) => {
   try {
-    // Stwórz sesję płatności
     const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
+      ui_mode: 'embedded',
       line_items: [{
         price_data: {
           currency: 'pln',
-          product_data: { name: 'Moja usługa' },
-          unit_amount: 2500, 
+          product_data: {
+            name: 'Twój produkt',
+          },
+          unit_amount: 1999, // 19.99 PLN
         },
         quantity: 1,
       }],
       mode: 'payment',
-      success_url: `${event.headers.host}/success.html`,
-      cancel_url: `${event.headers.host}/cancel.html`,
+      return_url: `${event.headers.origin}/success.html?session_id={CHECKOUT_SESSION_ID}`,
     });
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ id: session.id })
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sessionId: session.id })
     };
 
   } catch (error) {
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: error.message })
+      body: JSON.stringify({ 
+        error: error.message 
+      }),
     };
   }
 };
